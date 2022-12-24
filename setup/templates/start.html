@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Minesweeper</title>
+</head>
+<body>
+<h1>Hello</h1>
+<form action="{{ url_for('features.start_game') }}" method="GET">
+    <button type="submit">Start Game</button>
+</form>
+{% if game %}
+<h1>game</h1>
+{% for node in game %}
+<div style="border:solid; width: 18%; float: left;">
+    <p align="center">{{ node.value }}</p>
+</div>
+{% endfor %}
+{% endif %}
+</body>
+</html>
