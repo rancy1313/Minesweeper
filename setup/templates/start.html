@@ -3,19 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <title>Minesweeper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<h1>Hello</h1>
-<form action="{{ url_for('features.start_game') }}" method="GET">
-    <button type="submit">Start Game</button>
-</form>
-{% if game %}
-<h1>game</h1>
-{% for node in game %}
-<div style="border:solid; width: 18%; float: left;">
-    <p align="center">{{ node.value }}</p>
+<table>
+  <tr>
+    <td>Key:</td>
+    <td id="key"></td>
+  </tr>
+  <tr>
+    <td>Key Code:</td>
+    <td id="keyCode"></td>
+  </tr>
+  <tr>
+    <td>Event Code:</td>
+    <td id="eventCode"></td>
+  </tr>
+</table>
+<div id="mydiv">HoverMe
+  <div class="whyToCheckMe">Do I need to be checked too?</div>
 </div>
-{% endfor %}
+<h1>Hello</h1>
+<!-- Temporary solution to get bomb count. -->
+<!-- bomb count is 20% of the total amount of nodes -->
+{% if grid %}
+    <!-- If grid exists use grid -->
+    {% set bombs = (0.2 * grid|length)|round|int %}
+    <h2>Bombs: {{ bombs }}</h2>
+{% elif game %}
+    <!-- else game exists, so use game-->
+    {% set bombs = (0.2 * game|length)|round|int %}
+    <h2>Bombs: {{ bombs }}</h2>
+{% endif %}
+<form action="{{ url_for('features.set_game_grid') }}" method="GET">
+    <button type="submit">Beginner(10x10)</button>
+</form>
+<form action="{{ url_for('features.set_game_grid') }}" method="GET">
+    <button type="submit">Medium(15x15)</button>
+</form>
+<form action="{{ url_for('features.set_game_grid') }}" method="GET">
+    <button type="submit">Hard(25x25)</button>
+</form>
+<form action="{{ url_for('features.set_game_grid') }}" method="GET">
+    <button type="submit">Custom</button>
+</form>
+{% if grid %}
+    <h1>grid</h1>
+    {% for node in grid %}
+        {% if node.status == 0 %}
+            {% set display = 'grid' %}
+        {% endif %}
+        <form action="/first-node/{{ node.id }}" method="POST">
+            <button class="{{ display }}" id="{{ node.id }}">
+                <span class="hide">{{ node.value }}</span>
+            </button>
+        </form>
+    {% endfor %}
+{% endif %}
+{% if game %}
+    <h1>game</h1>
+    {% for node in game %}
+        {% if node.status == 0 %}
+            {% set display = 'inactive' %}
+        {% elif node.status == 2 %}
+            {% set display = 'active_mine' %}
+        {% elif node.status == 3 %}
+            {% set display = 'flagged_node' %}
+        {% else %}
+            {% set display = 'active' %}
+        {% endif %}
+        <form action="/check-value/{{ node.id }}" method="POST">
+            <!-- we set this here because html thinks we have repeating ids. However, the one above should get removed
+                    because it is just for testing -->
+            {% set tag_id = node.id %}
+            <button class="{{ display }}" id="{{ tag_id }}">{{ node.value }}
+                <span class="hide">{{ node.value }}</span>
+            </button>
+        </form>
+    {% endfor %}
 {% endif %}
 </body>
+<script type="text/javascript">
+  window.addEventListener("keydown", function(e) {
+    //tested in IE/Chrome/Firefox
+    if (e.keyCode === 77) {
+        document.getElementById("key").innerHTML = e.key;
+        document.getElementById("keyCode").innerHTML = e.keyCode;
+        document.getElementById("eventCode").innerHTML = e.code;
+        const nodes = document.querySelectorAll('button');
+        for (const node of nodes) {
+            if (node.matches(':hover') && ['inactive', 'flagged_node'].includes(node.className)) {
+                document.getElementById("key").innerHTML = node.id;
+
+                window.location.href = `/flag_node/${node.id}`;
+            }
+        }
+    } else if (e.keyCode === 90) {
+        document.getElementById("key").innerHTML = e.key;
+        document.getElementById("keyCode").innerHTML = e.keyCode;
+        document.getElementById("eventCode").innerHTML = e.code;
+    }
+  })
+const isHover = e => e.parentElement.querySelector(':hover') === e;
+const myDiv = document.getElementById('mydiv');
+document.addEventListener('mousemove', function checkHover() {
+  const hovered = isHover(myDiv);
+  if (hovered !== checkHover.hovered) {
+    document.getElementById('key').innerText = "hey there";
+    checkHover.hovered = hovered;
+  }
+});
+</script>
 </html>
