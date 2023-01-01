@@ -151,6 +151,8 @@ body {
 .alert{
     width: 450px;
     margin: 5px auto;
+    border-radius: 11px;
+
 }
 /*  */
 .title {
