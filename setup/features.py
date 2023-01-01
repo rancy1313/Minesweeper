@@ -216,7 +216,7 @@ def first_node(node_id):
     check_nodes_recursive(first_choice)
     # check game win status
     check_game_status(first_choice, game_info)
-    return redirect(url_for('features.refresh_game', time=game_info.updated_time))
+    return redirect(url_for('features.refresh_game'))
 
 
 # this function is to check the values of the surrounding nodes and activate the corresponding ones
@@ -252,8 +252,8 @@ def check_nodes_recursive(node):
 
 # remove time variable from functions(i don't think I use it in the html anymore)
 # this function is to flag nodes that the player think is a mine
-@features.route('/flag-node/<int:node_id>/<time>', methods=['POST', 'GET'])
-def flag_node(node_id, time):
+@features.route('/flag-node/<int:node_id>', methods=['POST', 'GET'])
+def flag_node(node_id):
     game_info = GameInfo.query.filter_by(id=1).first()
     # get the current time
     current_time = t.time()
@@ -267,12 +267,12 @@ def flag_node(node_id, time):
         # else flag the node
         node.status = 3
     db.session.commit()
-    return redirect(url_for('features.refresh_game', time=time))
+    return redirect(url_for('features.refresh_game'))
 
 
 # this function is to check the value of the player's selected node
-@features.route('/test-check-node-value/<int:node_id>/<time>', methods=['POST', 'GET'])
-def test_check_node_value(node_id, time):
+@features.route('/test-check-node-value/<int:node_id>', methods=['POST', 'GET'])
+def test_check_node_value(node_id):
     # get selected node by id
     node = Nodes.query.filter_by(id=node_id).first()
     # fetch current game info
@@ -365,14 +365,14 @@ def test_check_node_value(node_id, time):
 
 
 # this function is called to refresh the game(mostly used as a redirect
-@features.route('/refresh-game/<time>')
-def refresh_game(time):
+@features.route('/refresh-game', methods=['POST', 'GET'])
+def refresh_game():
     # fetch all the relevant items of the game
     game = Nodes.query.all()
     flagged_nodes = len(Nodes.query.filter_by(status=3).all())
     game_info = GameInfo.query.filter_by(id=1).first()
     db.session.commit()
-    return render_template('start.html', game=game, game_info=game_info, flagged_nodes=flagged_nodes, time=time)
+    return render_template('start.html', game=game, game_info=game_info, flagged_nodes=flagged_nodes)
 
 
 # when a player wins a game, they can submit their name and scores

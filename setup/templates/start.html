@@ -12,7 +12,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 {% if game_info %}
-    <body onload="update_time({{ game_info.updated_time }})">
+    <!-- game_time is a variable to pass to the 'onload' function that updates the games time. Set it to updated_time
+         everytime the page is refreshed to update the time -->
+    {% set game_time = game_info.updated_time %}
     {% if game_info.game_over == 1 %}
         {% set display = 'game_won' %}
         {% set message = 'CONGRATULATIONS!!!' %}
@@ -28,8 +30,10 @@
     {% endif %}
 {% else %}
     {% set score_box = 'hide' %}
-    <body>
+    <!-- if game_info does not exist then just set the game time to 0 -->
+    {% set game_time = 0 %}
 {% endif %}
+<body onload="update_time({{ game_time }})">
 <div style="text-align: center; width: 1450px">
     <h1 class="title">Minesweeper</h1>
     <div style="text-align: center;">
@@ -119,21 +123,19 @@
         {% if game_info.leader_board == 1 %}
             <div class="{{ score_box }}">
                 <form action="/submit-score" method="POST" class="text">
-
-                            {% set minutes = (game_info.updated_time / 60)|int %}
-                            {% set seconds = game_info.updated_time % 60 %}
-                            <label for="name">Name:</label>
-                            <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    class="form-control name_input"
-                                    pattern="[a-zaA-Z0-9]{2,8}"
-                            >
-                            <br />
-                            <p name="score">Score: {{ "%02d" % minutes }}:{{ "%02d" % seconds }}</p>
-                            <button type="submit" class="submit">Submit</button>
-
+                    {% set minutes = (game_info.updated_time / 60)|int %}
+                    {% set seconds = game_info.updated_time % 60 %}
+                    <label for="name">Name:</label>
+                    <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-control name_input"
+                            pattern="[a-zaA-Z0-9]{2,8}"
+                    >
+                    <br />
+                    <p name="score">Score: {{ "%02d" % minutes }}:{{ "%02d" % seconds }}</p>
+                    <button type="submit" class="submit">Submit</button>
                 </form>
             </div>
         {% endif %}
@@ -220,7 +222,7 @@
                 </button>
             {% else %}
                 {% set tag_id = node.id %}
-                <button class="{{ display }}" id="{{ tag_id }}" onclick="check_value({{ node.id }}, document.getElementById('time').innerText)">{{ node.value }}
+                <button class="{{ display }}" id="{{ tag_id }}" onclick="check_value({{ node.id }})">{{ node.value }}
                     {% if display == 'grid inactive' or (node.value == 0 and node.status == 1) %}
                         <span class="zero">{{ node.value }}</span>
                     {% elif display == 'grid wrongly_flagged_node' %}
@@ -239,24 +241,6 @@
     {% endif %}
 </div>
 </body>
-<script type="text/javascript">
-  window.addEventListener("keydown", function(e) {
-    //tested in IE/Chrome/Firefox
-    if (e.keyCode === 77) {
-        const nodes = document.querySelectorAll('button');
-        let time = document.getElementById('time').innerText;
-        for (const node of nodes) {
-            if (node.matches(':hover') && ['grid inactive', 'grid flagged_node'].includes(node.className)) {
-                window.location.href = `/flag-node/${node.id}/${time}`;
-            }
-        }
-    }
-  })
-
-function myFunction() {
-  alert("I am an alert box!");
-}
-</script>
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
       integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"

@@ -8,16 +8,30 @@ setInterval( function(){
     }
 }, 1000);
 
-function check_value(node_id, time) {
-  fetch(`/test-check-node-value/${node_id}/${time}`, {
+function check_value(node_id) {
+  fetch(`/test-check-node-value/${node_id}`, {
     method: "POST"
   }).then((_res) => {
-    window.location.href = `/refresh-game/${time}`;
+    window.location.href = `/refresh-game`;
   });
 }
 
 function update_time(time) {
     sec = time;
 }
+
+  window.addEventListener("keydown", function(e) {
+    //tested in IE/Chrome/Firefox
+    if (e.keyCode === 77) {
+        const nodes = document.querySelectorAll('button');
+        let time = document.getElementById('time').innerText;
+        for (const node of nodes) {
+            if (node.matches(':hover') && ['grid inactive', 'grid flagged_node'].includes(node.className)) {
+                window.location.href = `/flag-node/${node.id}`;
+            }
+        }
+    }
+  })
+
 
 
