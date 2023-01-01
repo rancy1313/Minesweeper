@@ -36,7 +36,7 @@
 <body onload="update_time({{ game_time }})">
 <div style="text-align: center; width: 1450px">
     <h1 class="title">Minesweeper</h1>
-    <div style="text-align: center;">
+    <div style="margin: 20px;">
         {% if not leader_board %}
         <form action="{{ url_for('features.start') }}" method="GET" style="display: inline;">
             <button type="submit" class="btn">Home</button>
@@ -140,12 +140,12 @@
             </div>
         {% endif %}
     {% endif %}
-
-    {% if grid %}
-            <h2 align="center">Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int }}</h2>
+    <div class="center_games">
+        {% if grid %}
+            <h2>Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int }}</h2>
             {% for node in grid %}
                 {% if node.status == 0 %}
-                    {% set display = 'grid grid_color' %}
+                    {% set display = 'grid inactive' %}
                 {% endif %}
                 <form action="/first-node/{{ node.id }}" method="POST" style="display: inline;">
                     <button class="{{ display }}" id="{{ node.id }}">
@@ -153,14 +153,16 @@
                     </button>
                 </form>
                 {% if loop.index % game_info.length == 0 %}
-                    <br />
+                    <div class="row">
+                    </div>
                 {% endif %}
             {% endfor %}
-    {% endif %}
+        {% endif %}
+    </div>
     {% if game %}
         {% set minutes = (game_info.updated_time / 60)|int %}
         {% set seconds = game_info.updated_time % 60 %}
-        <h2 align="center">
+        <h2>
             <!-- if game is lost then display the total of bombs -->
             {% if game_info.game_over == -1 %}
                 Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int }}  --
@@ -191,7 +193,27 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
+
+    <div class="center_games">
         {% for node in game %}
+            {% if node.value == 1 %}
+                {% set node_value_color = 'one' %}
+            {% elif node.value == 2 %}
+                {% set node_value_color = 'two' %}
+            {% elif node.value == 3 %}
+                {% set node_value_color = 'three' %}
+            {% elif node.value == 4 %}
+                {% set node_value_color = 'four' %}
+            {% elif node.value == 5 %}
+                {% set node_value_color = 'five' %}
+            {% elif node.value == 6 %}
+                {% set node_value_color = 'six' %}
+            {% elif node.value == 7 %}
+                {% set node_value_color = 'seven' %}
+            {% elif node.value == 8 %}
+                {% set node_value_color = 'eight' %}
+            {% endif %}
+
             {% if node.status == 0 %}
                 {% set display = 'grid inactive' %}
             {% elif node.status == 2 %}
@@ -203,11 +225,12 @@
             {% else %}
                 {% set display = 'grid active' %}
             {% endif %}
+
             {% if game_info.game_over != 0 or node.id in game_info.disabled_nodes %}
                 {% set disabled_tag_id = node.id %}
                 <button class="{{ display }}" id="{{ disabled_tag_id }}" disabled>
                     {% if display == 'grid inactive' or (node.value == 0 and node.status == 1) %}
-                        <span class="zero">{{ node.value }}</span>
+                        <span class="hide">{{ node.value }}</span>
                     {% elif display == 'grid wrongly_flagged_node' %}
                         <img align="center" src="{{ url_for('features.send_image', filename='skull.png') }}" height="30px" width="30px">
                     {% elif display == 'grid flagged_node' %}
@@ -216,28 +239,30 @@
                         {% if node.value == -1 %}
                             <img align="center" src="{{ url_for('features.send_image', filename='mine_img.png') }}" height="35px" width="35px">
                         {% else %}
-                            <span>{{ node.value }}</span>
+                            <span class="{{ node_value_color }}">{{ node.value }}</span>
                         {% endif %}
                     {% endif %}
                 </button>
             {% else %}
                 {% set tag_id = node.id %}
-                <button class="{{ display }}" id="{{ tag_id }}" onclick="check_value({{ node.id }})">{{ node.value }}
+                <button class="{{ display }}" id="{{ tag_id }}" onclick="check_value({{ node.id }})">
                     {% if display == 'grid inactive' or (node.value == 0 and node.status == 1) %}
-                        <span class="zero">{{ node.value }}</span>
+                        <span class="hide">{{ node.value }}</span>
                     {% elif display == 'grid wrongly_flagged_node' %}
                         <img align="center" src="{{ url_for('features.send_image', filename='skull.png') }}" height="30px" width="30px">
                     {% elif display == 'grid flagged_node' %}
                         <img align="center" src="{{ url_for('features.send_image', filename='flag.png') }}" height="30px" width="30px">
                     {% else %}
-                        <span>{{ node.value }}</span>
+                        <span class="{{ node_value_color }}">{{ node.value }}</span>
                     {% endif %}
                 </button>
             {% endif %}
             {% if loop.index % game_info.length == 0 %}
-                <br />
+                <div class="row">
+                </div>
             {% endif %}
         {% endfor %}
+    </div>
     {% endif %}
 </div>
 </body>

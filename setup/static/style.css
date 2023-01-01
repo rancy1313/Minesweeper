@@ -1,71 +1,64 @@
+/* this css is the shape of each node */
 .grid {
     cursor: pointer;
     border: solid;
     height: 50px;
     width: 50px;
     font-weight: bold;
-    font-size: 16px;
-    margin: 2px 0px;
+    font-size: 22px;
+    margin: 2px 2px;
     border-radius: 11px;
+    float: left;
 }
-
+/* the color for inactive nodes or not yet selected nodes */
 .inactive {
     background-color: #adebf0;
 }
 .inactive:hover, .inactive:focus {
     background-color: #71c3c9;
 }
-
-.grid_color {
-    background-color: #adebf0;
-}
-.grid_color:hover, .grid_color:focus {
-    background-color: #71c3c9;
-}
-
+/* the style for active nodes that have been selected already */
 .active {
     background-color: #f5f2e9;
 }
-
 .active:hover, .active:focus {
     background-color: #d4d0c7;
 }
-
+/* style for nodes that were flagged by the player as potential mines */
 .flagged_node {
     background-color: #7d9267;
     color: white;
     border-color: lightgreen;
 }
-
 .flagged_node:hover, .flagged_node:focus {
     background-color: #03211c;
 }
-
+/* when the game is lost the mines are exposed and this is the style for those mines */
 .active_mine {
     background-color: #7c0200;
     color: white;
     border-color: black;
 }
-
+/*  if a player wrongly flagged a node and selected the base node to see if their choice was right then this style is
+    applied to the node to let the user know they guessed wrong */
 .wrongly_flagged_node {
     background-color: #c1b1de;
 }
-
 .wrongly_flagged_node:hover {
     background-color: #826fa3;
 }
-
+/* this is applied to the node's values if they are inactive and to the game over messages to hide them */
 .hide {
     color: black;
     font-size: 20px;
     display: none;
 }
-
+/*  */
 body {
     margin: 45px;
     background-color: #EDF0EF;
 }
-
+/*  */
 .btn {
     background-color: #D9C7FC;
     padding: 8px 16px;
@@ -80,10 +73,7 @@ body {
     font-size: 20px
 }
 
-.hide {
-    display: none;
-}
-
+/*  */
 .text {
     margin: 20px auto;
     width: 700px;
@@ -96,21 +86,22 @@ body {
     text-align: left;
     padding-left: 80px;
 }
-
+/*  */
 .name_input {
     width: 250px;
     display: inline;
 }
-
+/*  */
 .game_won {
     font-size: 55px;
     color: darkgreen;
 }
-
+/*  */
 .game_lost {
     font-size: 55px;
     color: darkred;
 }
+/*  */
 .submit {
     background-color: #91FFF2;
     font-size: 25px;
@@ -119,7 +110,7 @@ body {
 .submit:hover {
     background-color: #1EAC9B;
 }
-
+/*  */
 .leader_board {
     background-color: darkgray;
     padding: 40px;
@@ -128,7 +119,7 @@ body {
     width: 75%;
     margin: 35px auto;
 }
-
+/*  */
 .player_scores {
     background-color: lightgray;
     padding: 40px;
@@ -141,35 +132,77 @@ body {
     margin: 20px auto;
     border-radius: 11px;
 }
-
+/*  */
 .stats {
     display: inline;
     margin: 15px;
 }
-
+/*  */
 .zero {
     opacity: 0;
 }
-
+/*  */
 .icons {
     background-color: #f2f2f2;
     padding: 5px;
     border-radius: 11px;
 }
-
+/*  */
 .alert{
     width: 450px;
     margin: 5px auto;
 }
-
+/*  */
 .title {
     font-size: 80px;
     color: darkred;
     font-weight: bold;
 }
-
+/*  */
 #leader_board {
     font-size: 60px;
     font-weight: bold;
     color: #FFED8A;
+}
+
+.row:before,
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
+.center_games {
+    margin: auto;
+    display: inline-block
+}
+
+#time {
+    color: #bf455d;
+}
+
+.one {
+    color: blue;
+}
+
+.two {
+    color: green;
+}
+.three {
+    color: red;
+}
+.four {
+    color: purple;
+}
+.five {
+    color: maroon;
+}
+.six {
+    color: turquoise;
+}
+.seven {
+    color: black;
+}
+.eight {
+    color: gray;
 }
