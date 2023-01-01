@@ -1,69 +1,175 @@
+.grid {
+    cursor: pointer;
+    border: solid;
+    height: 50px;
+    width: 50px;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 2px 0px;
+    border-radius: 11px;
+}
+
 .inactive {
     background-color: #adebf0;
-    padding: 35px;
-    border: none;
-    cursor: pointer;
-    margin: 5px;
-    float: left;
 }
 .inactive:hover, .inactive:focus {
     background-color: #71c3c9;
-    display: inline;
 }
 
-.grid {
+.grid_color {
     background-color: #adebf0;
-    padding: 35px;
-    border: none;
-    cursor: pointer;
-    margin: 5px;
-    float: left;
 }
-.grid:hover, .grid:focus {
+.grid_color:hover, .grid_color:focus {
     background-color: #71c3c9;
-    display: inline;
 }
 
 .active {
-    background-color: #f7e0df;
-    padding: 35px;
-    border: none;
-    cursor: pointer;
-    margin: 5px;
-    float: left;
+    background-color: #f5f2e9;
 }
 
 .active:hover, .active:focus {
-    background-color: #f0b2ad;
-    display: inline;
+    background-color: #d4d0c7;
 }
 
 .flagged_node {
-    background-color: #03211c;
-    padding: 35px;
-    border: none;
-    cursor: pointer;
-    margin: 5px;
-    float: left;
+    background-color: #7d9267;
     color: white;
+    border-color: lightgreen;
 }
 
 .flagged_node:hover, .flagged_node:focus {
-    background-color: #7d9267;
-    display: inline;
+    background-color: #03211c;
 }
 
 .active_mine {
     background-color: #7c0200;
-    padding: 35px;
-    border: none;
-    cursor: pointer;
-    margin: 5px;
-    float: left;
+    color: white;
+    border-color: black;
+}
+
+.wrongly_flagged_node {
+    background-color: #c1b1de;
+}
+
+.wrongly_flagged_node:hover {
+    background-color: #826fa3;
 }
 
 .hide {
     color: black;
     font-size: 20px;
     display: none;
+}
+
+body {
+    margin: 45px;
+    background-color: #EDF0EF;
+}
+
+.btn {
+    background-color: #D9C7FC;
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    margin: 15px;
+    border: solid;
+    border-width: 1px;
+    border-color: #5B08FC;
+    font-weight: bold;
+    font-size: 20px
+}
+
+.hide {
+    display: none;
+}
+
+.text {
+    margin: 20px auto;
+    width: 700px;
+    font-size: 40px;
+    font-weight: bold;
+    color: black;
+    border: solid;
+    padding: 40px;
+    background-color: lightgrey;
+    text-align: left;
+    padding-left: 80px;
+}
+
+.name_input {
+    width: 250px;
+    display: inline;
+}
+
+.game_won {
+    font-size: 55px;
+    color: darkgreen;
+}
+
+.game_lost {
+    font-size: 55px;
+    color: darkred;
+}
+.submit {
+    background-color: #91FFF2;
+    font-size: 25px;
+    padding: 10px 15px;
+}
+.submit:hover {
+    background-color: #1EAC9B;
+}
+
+.leader_board {
+    background-color: darkgray;
+    padding: 40px;
+    margin: 55px 55px;
+    border: solid;
+    width: 75%;
+    margin: 35px auto;
+}
+
+.player_scores {
+    background-color: lightgray;
+    padding: 40px;
+    font-size: 20px;
+    font-weight: bold;
+    border: solid;
+    border-width: 1px;
+    text-align: center;
+    width: 70%;
+    margin: 20px auto;
+    border-radius: 11px;
+}
+
+.stats {
+    display: inline;
+    margin: 15px;
+}
+
+.zero {
+    opacity: 0;
+}
+
+.icons {
+    background-color: #f2f2f2;
+    padding: 5px;
+    border-radius: 11px;
+}
+
+.alert{
+    width: 450px;
+    margin: 5px auto;
+}
+
+.title {
+    font-size: 80px;
+    color: darkred;
+    font-weight: bold;
+}
+
+#leader_board {
+    font-size: 60px;
+    font-weight: bold;
+    color: #FFED8A;
 }

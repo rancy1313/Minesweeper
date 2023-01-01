@@ -20,7 +20,18 @@ class Nodes(db.Model):
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # the score of the player
-    score = db.Column(db.String(20))
+    score = db.Column(db.Integer())
     # the name of the player
     name = db.Column(db.String(30))
-    bombs = db.Column(db.Integer)
+    mines = db.Column(db.Integer)
+    difficulty = db.Column(db.String)
+
+
+class GameInfo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    length = db.Column(db.Integer)
+    updated_time = db.Column(db.Integer)
+    game_over = db.Column(db.Integer, default=0)
+    disabled_nodes = db.Column(MutableList.as_mutable(PickleType), default=[])
+    start_time = db.Column(db.Float)
+    leader_board = db.Column(db.Integer, default=0)

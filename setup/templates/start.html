@@ -3,115 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <title>Minesweeper</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-<table>
-  <tr>
-    <td>Key:</td>
-    <td id="key"></td>
-  </tr>
-  <tr>
-    <td>Key Code:</td>
-    <td id="keyCode"></td>
-  </tr>
-  <tr>
-    <td>Event Code:</td>
-    <td id="eventCode"></td>
-  </tr>
-</table>
-<div id="mydiv">HoverMe
-  <div class="whyToCheckMe">Do I need to be checked too?</div>
+{% if game_info %}
+    <body onload="update_time({{ game_info.updated_time }})">
+    {% if game_info.game_over == 1 %}
+        {% set display = 'game_won' %}
+        {% set message = 'CONGRATULATIONS!!!' %}
+        {% set score_box = 'show' %}
+    {% elif game_info.game_over == -1 %}
+        {% set display = 'game_lost' %}
+        {% set message = 'SORRY. TRY AGAIN!!!' %}
+        {% set score_box = 'hide' %}
+    {% else %}
+        {% set display = 'hide' %}
+        {% set score_box = 'hide' %}
+        {% set message = 'N/A' %}
+    {% endif %}
+{% else %}
+    {% set score_box = 'hide' %}
+    <body>
+{% endif %}
+<div style="text-align: center; width: 1450px">
+    <h1 class="title">Minesweeper</h1>
+    <div style="text-align: center;">
+        {% if not leader_board %}
+        <form action="{{ url_for('features.start') }}" method="GET" style="display: inline;">
+            <button type="submit" class="btn">Home</button>
+        </form>
+        {% endif %}
+        <form action="{{ url_for('features.set_game_grid', length=10) }}" method="GET" style="display: inline;">
+            <button type="submit" class="btn">Beginner(10x10)</button>
+        </form>
+        <form action="{{ url_for('features.set_game_grid', length=15) }}" method="GET" style="display: inline;">
+            <button type="submit" class="btn">Medium(15x15)</button>
+        </form>
+        <form action="{{ url_for('features.set_game_grid', length=25) }}" method="GET" style="display: inline;">
+            <button type="submit" class="btn">Hard(25x25)</button>
+        </form>
+        <form action="{{ url_for('features.set_game_grid', length=5) }}" method="GET" style="display: inline;">
+            <button type="submit" class="btn">Test Game(5x5)</button>
+        </form>
+    </div>
+
+    {% if leader_board %}
+        <div class="leader_board">
+            <h1 id="leader_board" align="center">Leader Board</h1>
+            {% set Beginner_rank = [1] %}
+            {% set Medium_rank = [1] %}
+            {% set Hard_rank = [1] %}
+            {% for difficulty in ['Beginner', 'Medium', 'Hard', 'First Node Winners', 'Test Game'] %}
+                <h2 align="center">{{ difficulty }}</h2>
+                {% for game in leader_board|reverse %}
+                    {% set minutes = (game.score|int / 60)|int %}
+                    {% set seconds = game.score|int % 60 %}
+                    {% if game.score != 0 and game.difficulty == difficulty and game.mines != 5 %}
+                        {% if game.difficulty == 'Beginner' %}
+                            {% set rank = Beginner_rank|length %}
+                        {% elif game.difficulty == 'Medium' %}
+                            {% set rank = Medium_rank|length %}
+                        {% elif game.difficulty == 'Hard' %}
+                            {% set rank = Hard_rank|length %}
+                        {% endif %}
+                        <div class="player_scores">
+                            <p class="stats">Rank: {{ rank }}
+                            {% if rank == 1 and difficulty == 'Beginner' %}
+                                <img class="icons" align="center" src="{{ url_for('features.send_image', filename='easy_trophy.png') }}" height="30px" width="30px">
+                            {% elif rank == 1 and difficulty == 'Medium' %}
+                                <img class="icons" align="center" src="{{ url_for('features.send_image', filename='medium_trophy.png') }}" height="30px" width="30px">
+                            {% elif rank == 1 and difficulty == 'Hard' %}
+                                <img class="icons" align="center" src="{{ url_for('features.send_image', filename='hard_trophy.png') }}" height="40px" width="40px">
+                            {% endif %}
+                            </p>
+                            <p class="stats">Player: {{ game.name }}</p>
+                            <p class="stats">Score: {{ "%02d" % minutes }}:{{ "%02d" % seconds }}</p>
+                            <p class="stats">Mines: {{ game.mines }}</p>
+                        </div>
+                        <p hidden>
+                            {% if game.difficulty == 'Beginner' %}
+                                {{ Beginner_rank.append(1) }}
+                            {% elif game.difficulty == 'Medium' %}
+                                {{ Medium_rank.append(1) }}
+                            {% elif game.difficulty == 'Hard' %}
+                                {{ Hard_rank.append(1) }}
+                            {% endif %}
+                        </p>
+                    {% elif game.score == 0 and difficulty == 'First Node Winners' %}
+                        <div class="player_scores">
+                            <p class="stats">
+                                <img class="icons" align="center" src="{{ url_for('features.send_image', filename='lucky_players.png') }}" height="40px" width="40px">
+                                Player: {{ game.name }}</p>
+                            <p class="stats">Score: 00:00</p>
+                            <p class="stats">Mines: {{ game.mines }}</p>
+                            <p class="stats">Difficulty: {{ game.difficulty }}</p>
+                        </div>
+                    {% elif game.mines == 5 and difficulty == 'Test Game' %}
+                        <div class="player_scores">
+                            <p class="stats">Player: {{ game.name }}</p>
+                            <p class="stats">Score: {{ "%02d" % minutes }}:{{ "%02d" % seconds }}</p>
+                            <p class="stats">Mines: {{ game.mines }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    <h1 align="center" class="{{ display }}" id="game_over">{{ message }}</h1>
+    {% if game_info %}
+        {% if game_info.leader_board == 1 %}
+            <div class="{{ score_box }}">
+                <form action="/submit-score" method="POST" class="text">
+
+                            {% set minutes = (game_info.updated_time / 60)|int %}
+                            {% set seconds = game_info.updated_time % 60 %}
+                            <label for="name">Name:</label>
+                            <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    class="form-control name_input"
+                                    pattern="[a-zaA-Z0-9]{2,8}"
+                            >
+                            <br />
+                            <p name="score">Score: {{ "%02d" % minutes }}:{{ "%02d" % seconds }}</p>
+                            <button type="submit" class="submit">Submit</button>
+
+                </form>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% if grid %}
+            <h2 align="center">Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int }}</h2>
+            {% for node in grid %}
+                {% if node.status == 0 %}
+                    {% set display = 'grid grid_color' %}
+                {% endif %}
+                <form action="/first-node/{{ node.id }}" method="POST" style="display: inline;">
+                    <button class="{{ display }}" id="{{ node.id }}">
+                        <span class="hide">{{ node.value }}</span>
+                    </button>
+                </form>
+                {% if loop.index % game_info.length == 0 %}
+                    <br />
+                {% endif %}
+            {% endfor %}
+    {% endif %}
+    {% if game %}
+        {% set minutes = (game_info.updated_time / 60)|int %}
+        {% set seconds = game_info.updated_time % 60 %}
+        <h2 align="center">
+            <!-- if game is lost then display the total of bombs -->
+            {% if game_info.game_over == -1 %}
+                Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int }}  --
+            {% else %}
+                <!-- else display the difference of flagged nodes and bombs -->
+                Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int - flagged_nodes }}  --
+            {% endif %}
+            Score: <b id="time"><span id="minutes">{{ "%02d" % minutes }}</span>:<span id="seconds">{{ "%02d" % seconds }}</span></b>
+        </h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'error' %}
+                    <div class="alert alert-danger alter-dismissable fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-success alter-dismissable fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% for node in game %}
+            {% if node.status == 0 %}
+                {% set display = 'grid inactive' %}
+            {% elif node.status == 2 %}
+                {% set display = 'grid active_mine' %}
+            {% elif node.status == 3 %}
+                {% set display = 'grid flagged_node' %}
+            {% elif node.status == 4 %}
+                {% set display = 'grid wrongly_flagged_node' %}
+            {% else %}
+                {% set display = 'grid active' %}
+            {% endif %}
+            {% if game_info.game_over != 0 or node.id in game_info.disabled_nodes %}
+                {% set disabled_tag_id = node.id %}
+                <button class="{{ display }}" id="{{ disabled_tag_id }}" disabled>
+                    {% if display == 'grid inactive' or (node.value == 0 and node.status == 1) %}
+                        <span class="zero">{{ node.value }}</span>
+                    {% elif display == 'grid wrongly_flagged_node' %}
+                        <img align="center" src="{{ url_for('features.send_image', filename='skull.png') }}" height="30px" width="30px">
+                    {% elif display == 'grid flagged_node' %}
+                        <img align="center" src="{{ url_for('features.send_image', filename='flag.png') }}" height="35px" width="35px">
+                    {% else %}
+                        {% if node.value == -1 %}
+                            <img align="center" src="{{ url_for('features.send_image', filename='mine_img.png') }}" height="35px" width="35px">
+                        {% else %}
+                            <span>{{ node.value }}</span>
+                        {% endif %}
+                    {% endif %}
+                </button>
+            {% else %}
+                {% set tag_id = node.id %}
+                <button class="{{ display }}" id="{{ tag_id }}" onclick="check_value({{ node.id }}, document.getElementById('time').innerText)">{{ node.value }}
+                    {% if display == 'grid inactive' or (node.value == 0 and node.status == 1) %}
+                        <span class="zero">{{ node.value }}</span>
+                    {% elif display == 'grid wrongly_flagged_node' %}
+                        <img align="center" src="{{ url_for('features.send_image', filename='skull.png') }}" height="30px" width="30px">
+                    {% elif display == 'grid flagged_node' %}
+                        <img align="center" src="{{ url_for('features.send_image', filename='flag.png') }}" height="30px" width="30px">
+                    {% else %}
+                        <span>{{ node.value }}</span>
+                    {% endif %}
+                </button>
+            {% endif %}
+            {% if loop.index % game_info.length == 0 %}
+                <br />
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 </div>
-<h1>Hello</h1>
-<!-- Temporary solution to get bomb count. -->
-<!-- bomb count is 20% of the total amount of nodes -->
-{% if grid %}
-    <!-- If grid exists use grid -->
-    {% set bombs = (0.2 * grid|length)|round|int %}
-    <h2>Bombs: {{ bombs }}</h2>
-{% elif game %}
-    <!-- else game exists, so use game-->
-    {% set bombs = (0.2 * game|length)|round|int %}
-    <h2>Bombs: {{ bombs }}</h2>
-{% endif %}
-<form action="{{ url_for('features.set_game_grid') }}" method="GET">
-    <button type="submit">Beginner(10x10)</button>
-</form>
-<form action="{{ url_for('features.set_game_grid') }}" method="GET">
-    <button type="submit">Medium(15x15)</button>
-</form>
-<form action="{{ url_for('features.set_game_grid') }}" method="GET">
-    <button type="submit">Hard(25x25)</button>
-</form>
-<form action="{{ url_for('features.set_game_grid') }}" method="GET">
-    <button type="submit">Custom</button>
-</form>
-{% if grid %}
-    <h1>grid</h1>
-    {% for node in grid %}
-        {% if node.status == 0 %}
-            {% set display = 'grid' %}
-        {% endif %}
-        <form action="/first-node/{{ node.id }}" method="POST">
-            <button class="{{ display }}" id="{{ node.id }}">
-                <span class="hide">{{ node.value }}</span>
-            </button>
-        </form>
-    {% endfor %}
-{% endif %}
-{% if game %}
-    <h1>game</h1>
-    {% for node in game %}
-        {% if node.status == 0 %}
-            {% set display = 'inactive' %}
-        {% elif node.status == 2 %}
-            {% set display = 'active_mine' %}
-        {% elif node.status == 3 %}
-            {% set display = 'flagged_node' %}
-        {% else %}
-            {% set display = 'active' %}
-        {% endif %}
-        <form action="/check-value/{{ node.id }}" method="POST">
-            <!-- we set this here because html thinks we have repeating ids. However, the one above should get removed
-                    because it is just for testing -->
-            {% set tag_id = node.id %}
-            <button class="{{ display }}" id="{{ tag_id }}">{{ node.value }}
-                <span class="hide">{{ node.value }}</span>
-            </button>
-        </form>
-    {% endfor %}
-{% endif %}
 </body>
 <script type="text/javascript">
   window.addEventListener("keydown", function(e) {
     //tested in IE/Chrome/Firefox
     if (e.keyCode === 77) {
-        document.getElementById("key").innerHTML = e.key;
-        document.getElementById("keyCode").innerHTML = e.keyCode;
-        document.getElementById("eventCode").innerHTML = e.code;
         const nodes = document.querySelectorAll('button');
+        let time = document.getElementById('time').innerText;
         for (const node of nodes) {
-            if (node.matches(':hover') && ['inactive', 'flagged_node'].includes(node.className)) {
-                document.getElementById("key").innerHTML = node.id;
-
-                window.location.href = `/flag_node/${node.id}`;
+            if (node.matches(':hover') && ['grid inactive', 'grid flagged_node'].includes(node.className)) {
+                window.location.href = `/flag-node/${node.id}/${time}`;
             }
         }
-    } else if (e.keyCode === 90) {
-        document.getElementById("key").innerHTML = e.key;
-        document.getElementById("keyCode").innerHTML = e.keyCode;
-        document.getElementById("eventCode").innerHTML = e.code;
     }
   })
-const isHover = e => e.parentElement.querySelector(':hover') === e;
-const myDiv = document.getElementById('mydiv');
-document.addEventListener('mousemove', function checkHover() {
-  const hovered = isHover(myDiv);
-  if (hovered !== checkHover.hovered) {
-    document.getElementById('key').innerText = "hey there";
-    checkHover.hovered = hovered;
-  }
-});
+
+function myFunction() {
+  alert("I am an alert box!");
+}
 </script>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+<script
+      type="text/javascript"
+      src="{{ url_for('static', filename='index.js') }}"
+    ></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </html>
