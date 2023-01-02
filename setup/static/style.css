@@ -53,12 +53,12 @@
     font-size: 20px;
     display: none;
 }
-/*  */
+/* to add a background color to the game */
 body {
     margin: 45px;
     background-color: #EDF0EF;
 }
-/*  */
+/* this is the style for the top buttons(Home, Beginner, Medium, and Hard */
 .btn {
     background-color: #D9C7FC;
     padding: 8px 16px;
@@ -73,7 +73,7 @@ body {
     font-size: 20px
 }
 
-/*  */
+/* This style is for the pop up score box after a player wins a game */
 .text {
     margin: 20px auto;
     width: 700px;
@@ -86,22 +86,22 @@ body {
     text-align: left;
     padding-left: 80px;
 }
-/*  */
+/* the input field for a player's name for the leaderboard */
 .name_input {
     width: 250px;
     display: inline;
 }
-/*  */
+/* the color/size for the 'congratulations' message after winning a game */
 .game_won {
     font-size: 55px;
     color: darkgreen;
 }
-/*  */
+/* the color/size for the 'sorry try again' message that pops up when losing a game */
 .game_lost {
     font-size: 55px;
-    color: darkred;
+    color: red;
 }
-/*  */
+/* the submit button in the score box after winning */
 .submit {
     background-color: #91FFF2;
     font-size: 25px;
@@ -110,8 +110,8 @@ body {
 .submit:hover {
     background-color: #1EAC9B;
 }
-/*  */
-.leader_board {
+/* for the div that contains the leaderboard*/
+.leaderboard {
     background-color: darkgray;
     padding: 40px;
     margin: 55px 55px;
@@ -119,7 +119,13 @@ body {
     width: 75%;
     margin: 35px auto;
 }
-/*  */
+/* to style the leaderboard header  */
+#leaderboard {
+    font-size: 60px;
+    font-weight: bold;
+    color: #FFED8A;
+}
+/* style for each entry on the leaderboard */
 .player_scores {
     background-color: lightgray;
     padding: 40px;
@@ -132,61 +138,44 @@ body {
     margin: 20px auto;
     border-radius: 11px;
 }
-/*  */
+/* to style each p tag inside the entries of the leaderboard(mostly just for margin) */
 .stats {
     display: inline;
     margin: 15px;
 }
-/*  */
-.zero {
-    opacity: 0;
-}
-/*  */
+/* style for each icon on the leaderboard */
 .icons {
     background-color: #f2f2f2;
     padding: 5px;
     border-radius: 11px;
 }
-/*  */
+/* style for when a user gets a penalty message */
 .alert{
     width: 450px;
     margin: 5px auto;
     border-radius: 11px;
 
 }
-/*  */
+/* the Minesweeper logo */
 .title {
     font-size: 80px;
     color: darkred;
     font-weight: bold;
 }
-/*  */
-#leader_board {
-    font-size: 60px;
-    font-weight: bold;
-    color: #FFED8A;
-}
-
-.row:before,
-      .row:after {
-        content: "";
-        display: table;
-        clear: both;
-      }
-
+/* css to center all the games */
 .center_games {
     margin: auto;
     display: inline-block
 }
-
+/* css for the timer of each game */
 #time {
     color: #bf455d;
 }
-
+/*  the following classes are to style the value of the nodes for an active node depending on how many mines are
+    surrounding the node */
 .one {
     color: blue;
 }
-
 .two {
     color: green;
 }

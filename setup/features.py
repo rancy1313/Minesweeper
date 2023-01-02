@@ -76,8 +76,8 @@ def start():
                 db.session.delete(hard[i])
     db.session.commit()
     # the leader board is all the saved games
-    leader_board = db.session.query(Game).order_by(desc(Game.score)).all()
-    return render_template('start.html', leader_board=leader_board)
+    leaderboard = db.session.query(Game).order_by(desc(Game.score)).all()
+    return render_template('start.html', leaderboard=leaderboard)
 
 
 # this function sets up the grid for the game mode chosen
@@ -422,8 +422,8 @@ def check_game_status(node, game_info):
             # if our score is higher than the lowest score on the leaderboard then our score gets added to the
             # board
             if corresponding_games[0].score > game_info.updated_time:
-                game_info.leader_board = 1
+                game_info.leaderboard = 1
         # else we show the score box for test games to be added on the leaderboard
         else:
-            game_info.leader_board = 1
+            game_info.leaderboard = 1
         db.session.commit()

@@ -34,4 +34,4 @@ class GameInfo(db.Model):
     game_over = db.Column(db.Integer, default=0)
     disabled_nodes = db.Column(MutableList.as_mutable(PickleType), default=[])
     start_time = db.Column(db.Float)
-    leader_board = db.Column(db.Integer, default=0)
+    leaderboard = db.Column(db.Integer, default=0)

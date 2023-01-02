@@ -37,7 +37,7 @@
 <div style="text-align: center; width: 1450px">
     <h1 class="title">Minesweeper</h1>
     <div style="margin: 20px;">
-        {% if not leader_board %}
+        {% if not leaderboard %}
         <form action="{{ url_for('features.start') }}" method="GET" style="display: inline;">
             <button type="submit" class="btn">Home</button>
         </form>
@@ -56,15 +56,15 @@
         </form>
     </div>
 
-    {% if leader_board %}
-        <div class="leader_board">
-            <h1 id="leader_board" align="center">Leader Board</h1>
+    {% if leaderboard %}
+        <div class="leaderboard">
+            <h1 id="leaderboard" align="center">Leader Board</h1>
             {% set Beginner_rank = [1] %}
             {% set Medium_rank = [1] %}
             {% set Hard_rank = [1] %}
             {% for difficulty in ['Beginner', 'Medium', 'Hard', 'First Node Winners', 'Test Game'] %}
                 <h2 align="center">{{ difficulty }}</h2>
-                {% for game in leader_board|reverse %}
+                {% for game in leaderboard|reverse %}
                     {% set minutes = (game.score|int / 60)|int %}
                     {% set seconds = game.score|int % 60 %}
                     {% if game.score != 0 and game.difficulty == difficulty and game.mines != 5 %}
@@ -120,7 +120,7 @@
     {% endif %}
     <h1 align="center" class="{{ display }}" id="game_over">{{ message }}</h1>
     {% if game_info %}
-        {% if game_info.leader_board == 1 %}
+        {% if game_info.leaderboard == 1 %}
             <div class="{{ score_box }}">
                 <form action="/submit-score" method="POST" class="text">
                     {% set minutes = (game_info.updated_time / 60)|int %}
@@ -153,8 +153,7 @@
                     </button>
                 </form>
                 {% if loop.index % game_info.length == 0 %}
-                    <div class="row">
-                    </div>
+                    <div style="clear: both;"></div>
                 {% endif %}
             {% endfor %}
         {% endif %}
@@ -258,8 +257,7 @@
                 </button>
             {% endif %}
             {% if loop.index % game_info.length == 0 %}
-                <div class="row">
-                </div>
+                <div style="clear: both;"></div>
             {% endif %}
         {% endfor %}
     </div>
