@@ -76,7 +76,7 @@ def start():
                 db.session.delete(hard[i])
     db.session.commit()
     # the leader board is all the saved games
-    leaderboard = db.session.query(Game).order_by(desc(Game.score)).all()
+    leaderboard = db.session.query(Game).order_by(Game.score).all()
     return render_template('start.html', leaderboard=leaderboard)
 
 
@@ -267,12 +267,15 @@ def flag_node(node_id):
         # else flag the node
         node.status = 3
     db.session.commit()
-    return redirect(url_for('features.refresh_game'))
+    return jsonify({})
+    # used to call the refresh function, but now we just refresh the div containing the game on the front end
+    # leaving this here just to document
+    # return redirect(url_for('features.refresh_game'))
 
 
 # this function is to check the value of the player's selected node
-@features.route('/test-check-node-value/<int:node_id>', methods=['POST', 'GET'])
-def test_check_node_value(node_id):
+@features.route('/check-node-value/<int:node_id>', methods=['POST', 'GET'])
+def check_node_value(node_id):
     # get selected node by id
     node = Nodes.query.filter_by(id=node_id).first()
     # fetch current game info
@@ -362,6 +365,9 @@ def test_check_node_value(node_id):
         # check if game was won
         check_game_status(node, game_info)
     return jsonify({})
+    # used to call the refresh function, but now we just refresh the div containing the game on the front end
+    # leaving this here just to document
+    # return redirect(url_for('features.refresh_game'))
 
 
 # this function is called to refresh the game(mostly used as a redirect
@@ -421,7 +427,11 @@ def check_game_status(node, game_info):
             corresponding_games = db.session.query(Game).filter_by(mines=mines).order_by(desc(Game.score)).all()
             # if our score is higher than the lowest score on the leaderboard then our score gets added to the
             # board
-            if corresponding_games[0].score > game_info.updated_time:
+            # make sure games exist
+            if len(corresponding_games) != 0:
+                if corresponding_games[0].score > game_info.updated_time:
+                    game_info.leaderboard = 1
+            else:
                 game_info.leaderboard = 1
         # else we show the score box for test games to be added on the leaderboard
         else:

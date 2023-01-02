@@ -10,38 +10,53 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- there is one html file for all the pages. I decided to do it this way because there are only two pages and they
+         both do not contain much in them, so I decided to just put everything in one file.-->
 </head>
+<!-- if we are on the home page then game_info does not exist. The value declared inside this if statement are for
+     the games -->
 {% if game_info %}
     <!-- game_time is a variable to pass to the 'onload' function that updates the games time. Set it to updated_time
          everytime the page is refreshed to update the time -->
     {% set game_time = game_info.updated_time %}
+    <!-- if game_over == 1 then the game was won by the player -->
     {% if game_info.game_over == 1 %}
+        <!-- add the game won class and congrats message to the header -->
         {% set display = 'game_won' %}
         {% set message = 'CONGRATULATIONS!!!' %}
-        {% set score_box = 'show' %}
+    <!-- if game_over == -1 then the game was lost by the player -->
     {% elif game_info.game_over == -1 %}
+        <!-- add the game lost class and try again message to the header -->
         {% set display = 'game_lost' %}
         {% set message = 'SORRY. TRY AGAIN!!!' %}
-        {% set score_box = 'hide' %}
+    <!-- the game is ongoing and we hide the header -->
     {% else %}
+        <!-- hide the header -->
         {% set display = 'hide' %}
-        {% set score_box = 'hide' %}
         {% set message = 'N/A' %}
     {% endif %}
 {% else %}
-    {% set score_box = 'hide' %}
     <!-- if game_info does not exist then just set the game time to 0 -->
     {% set game_time = 0 %}
 {% endif %}
+<!-- everytime the page is refreshed we update the timer's time to match the backend time. If there is no game then
+     nothing happens-->
 <body onload="update_time({{ game_time }})">
-<div style="text-align: center; width: 1450px">
+<!-- this div set elements to the center and increases the width to allow the games to fit on the page without them
+     collapsing on themselves -->
+<div id="game_width">
+    <p id="jello"></p>
+    <!-- logo header -->
     <h1 class="title">Minesweeper</h1>
+    <!-- div to add margin to the top page buttons -->
     <div style="margin: 20px;">
+        <!-- if leaderboard exists then we are on the home page, so only display when on a game -->
         {% if not leaderboard %}
-        <form action="{{ url_for('features.start') }}" method="GET" style="display: inline;">
-            <button type="submit" class="btn">Home</button>
-        </form>
+            <form action="{{ url_for('features.start') }}" method="GET" style="display: inline;">
+                <button type="submit" class="btn">Home</button>
+            </form>
         {% endif %}
+        <!-- buttons to choose game difficulty -->
         <form action="{{ url_for('features.set_game_grid', length=10) }}" method="GET" style="display: inline;">
             <button type="submit" class="btn">Beginner(10x10)</button>
         </form>
@@ -55,32 +70,48 @@
             <button type="submit" class="btn">Test Game(5x5)</button>
         </form>
     </div>
-
+    <!-- if leaderboard exists then we are on the home page and the leaderboard is displayed -->
     {% if leaderboard %}
+        <!-- this div styles the leaderboard -->
         <div class="leaderboard">
             <h1 id="leaderboard" align="center">Leader Board</h1>
-            {% set Beginner_rank = [1] %}
-            {% set Medium_rank = [1] %}
-            {% set Hard_rank = [1] %}
+            <!-- these are counters to assign rank 1 to every category of difficulty -->
+            <!-- the leaderboard is a list of all the games, and we loop through them to sort them under the correct
+                 section. Admittedly, I can sort the games in the back end and pass them as variables, and I wouldn't
+                 have to do any this here. -->
+            <!-- loop through the difficulties -->
             {% for difficulty in ['Beginner', 'Medium', 'Hard', 'First Node Winners', 'Test Game'] %}
+                <!-- reset counter vars for ranks -->
+                {% set Beginner_rank = namespace(value=1) %}
+                {% set Medium_rank = namespace(value=1) %}
+                {% set Hard_rank = namespace(value=1) %}
+                <!-- display difficulty and then loop through the games and filter them -->
                 <h2 align="center">{{ difficulty }}</h2>
-                {% for game in leaderboard|reverse %}
+                {% for game in leaderboard %}
+                    <!-- convert the scores to minutes:seconds format -->
                     {% set minutes = (game.score|int / 60)|int %}
                     {% set seconds = game.score|int % 60 %}
+                    <!-- do not display games with scores of 0 because those are first node winners, and they go in
+                         their own category -->
                     {% if game.score != 0 and game.difficulty == difficulty and game.mines != 5 %}
+                        <!-- set the rank to the length of what each difficulty list is -->
                         {% if game.difficulty == 'Beginner' %}
-                            {% set rank = Beginner_rank|length %}
+                            {% set rank = Beginner_rank.value %}
                         {% elif game.difficulty == 'Medium' %}
-                            {% set rank = Medium_rank|length %}
+                            {% set rank = Medium_rank.value %}
                         {% elif game.difficulty == 'Hard' %}
-                            {% set rank = Hard_rank|length %}
+                            {% set rank = Hard_rank.value %}
                         {% endif %}
+                        <!-- div for each entry on the leaderboard -->
                         <div class="player_scores">
                             <p class="stats">Rank: {{ rank }}
+                            <!-- Bronze trophy icon for rank 1 in Beginner difficulty(free use) -->
                             {% if rank == 1 and difficulty == 'Beginner' %}
                                 <img class="icons" align="center" src="{{ url_for('features.send_image', filename='easy_trophy.png') }}" height="30px" width="30px">
+                            <!-- Silver trophy icon for rank 1 in Medium difficulty(free use) -->
                             {% elif rank == 1 and difficulty == 'Medium' %}
                                 <img class="icons" align="center" src="{{ url_for('features.send_image', filename='medium_trophy.png') }}" height="30px" width="30px">
+                            <!-- Gold trophy icon for rank 1 in Hard difficulty(free use) -->
                             {% elif rank == 1 and difficulty == 'Hard' %}
                                 <img class="icons" align="center" src="{{ url_for('features.send_image', filename='hard_trophy.png') }}" height="40px" width="40px">
                             {% endif %}
@@ -89,24 +120,28 @@
                             <p class="stats">Score: {{ "%02d" % minutes }}:{{ "%02d" % seconds }}</p>
                             <p class="stats">Mines: {{ game.mines }}</p>
                         </div>
+                        <!-- increment the rank vars if the difficulty matches -->
                         <p hidden>
                             {% if game.difficulty == 'Beginner' %}
-                                {{ Beginner_rank.append(1) }}
+                                {% set Beginner_rank.value = Beginner_rank.value + 1 %}
                             {% elif game.difficulty == 'Medium' %}
-                                {{ Medium_rank.append(1) }}
+                                {% set Medium_rank.value = Medium_rank.value + 1 %}
                             {% elif game.difficulty == 'Hard' %}
-                                {{ Hard_rank.append(1) }}
+                                {% set Hard_rank.value = Hard_rank.value + 1 %}
                             {% endif %}
                         </p>
+                    <!-- All the first node winners are displayed here by order of when the game was won -->
                     {% elif game.score == 0 and difficulty == 'First Node Winners' %}
                         <div class="player_scores">
                             <p class="stats">
+                                <!-- Four leaf clover icon for all first node winners(free use) -->
                                 <img class="icons" align="center" src="{{ url_for('features.send_image', filename='lucky_players.png') }}" height="40px" width="40px">
                                 Player: {{ game.name }}</p>
                             <p class="stats">Score: 00:00</p>
                             <p class="stats">Mines: {{ game.mines }}</p>
                             <p class="stats">Difficulty: {{ game.difficulty }}</p>
                         </div>
+                    <!-- all test games go here. Only the 5 most recent games are kept -->
                     {% elif game.mines == 5 and difficulty == 'Test Game' %}
                         <div class="player_scores">
                             <p class="stats">Player: {{ game.name }}</p>
@@ -118,11 +153,16 @@
             {% endfor %}
         </div>
     {% endif %}
+    <!--- this is the message for when the game is complete(contents depends on if won/lost) -->
     <h1 align="center" class="{{ display }}" id="game_over">{{ message }}</h1>
     {% if game_info %}
+        <!-- if the player won the game and beat a high score then the score box will display for them to save their
+             name and score. The score box also displays for all test games since those are not saved based on score -->
         {% if game_info.leaderboard == 1 %}
             <div class="{{ score_box }}">
+                <!-- Pass vars to the backend -->
                 <form action="/submit-score" method="POST" class="text">
+                    <!-- format their score in minutes:seconds format -->
                     {% set minutes = (game_info.updated_time / 60)|int %}
                     {% set seconds = game_info.updated_time % 60 %}
                     <label for="name">Name:</label>
@@ -140,8 +180,15 @@
             </div>
         {% endif %}
     {% endif %}
+    <!-- div containing the current game -->
     <div class="center_games">
+        <!-- the grid is not the same as a game because this just sets up the nodes and there are no values assigned to
+             the nodes at this point. It is set up this way because the value of the nodes depend on what node the
+             player first chooses. It might be possible to combine the grid and game if we have a game_info variable
+             kept track of if the player has selected the first node, but this way works too. We split it up because the
+             nodes of the grid have a form that passes the values to the first node function.-->
         {% if grid %}
+            <!-- bomb counter -->
             <h2>Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int }}</h2>
             {% for node in grid %}
                 {% if node.status == 0 %}
@@ -152,13 +199,17 @@
                         <span class="hide">{{ node.value }}</span>
                     </button>
                 </form>
+                <!-- this if statement separates the nodes into rows. The nodes all float left so
+                     if loop.index % game_info.length == 0 then we are at the right corner and ned to start a new row-->
                 {% if loop.index % game_info.length == 0 %}
                     <div style="clear: both;"></div>
                 {% endif %}
             {% endfor %}
         {% endif %}
     </div>
+    <!-- the difference between a grid and a game is that the game's nodes all have values set -->
     {% if game %}
+        <!-- format the time correctly -->
         {% set minutes = (game_info.updated_time / 60)|int %}
         {% set seconds = game_info.updated_time % 60 %}
         <h2>
@@ -171,6 +222,8 @@
             {% endif %}
             Score: <b id="time"><span id="minutes">{{ "%02d" % minutes }}</span>:<span id="seconds">{{ "%02d" % seconds }}</span></b>
         </h2>
+        <!-- this will flash the player with penalty messages if they flagged the wrong node and
+             clicked the base node -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -192,75 +245,94 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-
-    <div class="center_games">
-        {% for node in game %}
-            {% if node.value == 1 %}
-                {% set node_value_color = 'one' %}
-            {% elif node.value == 2 %}
-                {% set node_value_color = 'two' %}
-            {% elif node.value == 3 %}
-                {% set node_value_color = 'three' %}
-            {% elif node.value == 4 %}
-                {% set node_value_color = 'four' %}
-            {% elif node.value == 5 %}
-                {% set node_value_color = 'five' %}
-            {% elif node.value == 6 %}
-                {% set node_value_color = 'six' %}
-            {% elif node.value == 7 %}
-                {% set node_value_color = 'seven' %}
-            {% elif node.value == 8 %}
-                {% set node_value_color = 'eight' %}
-            {% endif %}
-
-            {% if node.status == 0 %}
-                {% set display = 'grid inactive' %}
-            {% elif node.status == 2 %}
-                {% set display = 'grid active_mine' %}
-            {% elif node.status == 3 %}
-                {% set display = 'grid flagged_node' %}
-            {% elif node.status == 4 %}
-                {% set display = 'grid wrongly_flagged_node' %}
-            {% else %}
-                {% set display = 'grid active' %}
-            {% endif %}
-
-            {% if game_info.game_over != 0 or node.id in game_info.disabled_nodes %}
-                {% set disabled_tag_id = node.id %}
-                <button class="{{ display }}" id="{{ disabled_tag_id }}" disabled>
-                    {% if display == 'grid inactive' or (node.value == 0 and node.status == 1) %}
-                        <span class="hide">{{ node.value }}</span>
-                    {% elif display == 'grid wrongly_flagged_node' %}
-                        <img align="center" src="{{ url_for('features.send_image', filename='skull.png') }}" height="30px" width="30px">
-                    {% elif display == 'grid flagged_node' %}
-                        <img align="center" src="{{ url_for('features.send_image', filename='flag.png') }}" height="35px" width="35px">
-                    {% else %}
-                        {% if node.value == -1 %}
+        <!-- the nodes float left inside this div, so we center the div so that the nodes are all in the center -->
+        <div class="center_games">
+            <!-- loop through the nodes in the game to display them -->
+            {% for node in game %}
+                <!-- the following if statements assign the color of the values according to what they are in the
+                     minesweeper game -->
+                {% if node.value == 1 %}
+                    {% set node_value_color = 'one' %}
+                {% elif node.value == 2 %}
+                    {% set node_value_color = 'two' %}
+                {% elif node.value == 3 %}
+                    {% set node_value_color = 'three' %}
+                {% elif node.value == 4 %}
+                    {% set node_value_color = 'four' %}
+                {% elif node.value == 5 %}
+                    {% set node_value_color = 'five' %}
+                {% elif node.value == 6 %}
+                    {% set node_value_color = 'six' %}
+                {% elif node.value == 7 %}
+                    {% set node_value_color = 'seven' %}
+                {% elif node.value == 8 %}
+                    {% set node_value_color = 'eight' %}
+                {% endif %}
+                <!-- Depending on the node status, the nodes are displayed differently -->
+                <!-- status 0: means the player has not clicked this node yet, and it is inactive(blue nodes) -->
+                {% if node.status == 0 %}
+                    {% set display = 'grid inactive' %}
+                <!-- status 1: the player clicked a node that wasn't a mine and is not active -->
+                {% elif node.status == 1 %}
+                    {% set display = 'grid active' %}
+                <!-- status 2: means the node has a mine inside it and the player activated the mine(shown when game lost) -->
+                {% elif node.status == 2 %}
+                    {% set display = 'grid active_mine' %}
+                <!-- status 3: is a flagged node. The player can flag any inactive nodes in the game not in the grid -->
+                {% elif node.status == 3 %}
+                    {% set display = 'grid flagged_node' %}
+                <!-- status 4: if a player flagged a node wrong then they get a penalty and the node is turned
+                     purple. The player can click on it to make it active or click the base to make it active-->
+                {% elif node.status == 4 %}
+                    {% set display = 'grid wrongly_flagged_node' %}
+                {% endif %}
+                <!-- if the game is over then we disable all the nodes (win or lost) -->
+                {% if game_info.game_over != 0 %}
+                    {% set disabled_tag_id = node.id %}
+                    <button class="{{ display }}" id="{{ disabled_tag_id }}" disabled>
+                        <!-- we hide values of zero/inactive since aren't used -->
+                        {% if display == 'grid inactive' or (node.value == 0 and node.status == 1) %}
+                            <span class="hide">{{ node.value }}</span>
+                        <!-- wrongly flagged nodes have a skull displayed(free use) -->
+                        {% elif display == 'grid wrongly_flagged_node' %}
+                            <img align="center" src="{{ url_for('features.send_image', filename='skull.png') }}" height="30px" width="30px">
+                        <!-- flagged nodes have a flag displayed(free use) -->
+                        {% elif display == 'grid flagged_node' %}
+                            <img align="center" src="{{ url_for('features.send_image', filename='flag.png') }}" height="35px" width="35px">
+                        <!-- display all the mines -->
+                        {% elif node.value == -1 %}
                             <img align="center" src="{{ url_for('features.send_image', filename='mine_img.png') }}" height="35px" width="35px">
+                        <!-- just an active node -->
                         {% else %}
                             <span class="{{ node_value_color }}">{{ node.value }}</span>
                         {% endif %}
-                    {% endif %}
-                </button>
-            {% else %}
-                {% set tag_id = node.id %}
-                <button class="{{ display }}" id="{{ tag_id }}" onclick="check_value({{ node.id }})">
-                    {% if display == 'grid inactive' or (node.value == 0 and node.status == 1) %}
-                        <span class="hide">{{ node.value }}</span>
-                    {% elif display == 'grid wrongly_flagged_node' %}
-                        <img align="center" src="{{ url_for('features.send_image', filename='skull.png') }}" height="30px" width="30px">
-                    {% elif display == 'grid flagged_node' %}
-                        <img align="center" src="{{ url_for('features.send_image', filename='flag.png') }}" height="30px" width="30px">
-                    {% else %}
-                        <span class="{{ node_value_color }}">{{ node.value }}</span>
-                    {% endif %}
-                </button>
-            {% endif %}
-            {% if loop.index % game_info.length == 0 %}
-                <div style="clear: both;"></div>
-            {% endif %}
-        {% endfor %}
-    </div>
+                    </button>
+                <!-- game has not been finished yet and is ongoing -->
+                {% else %}
+                    <!-- give buttons ids for js to fetch(m key click check) -->
+                    {% set tag_id = node.id|string %}
+                    <button class="{{ display }}" id="{{ tag_id }}" onclick="check_value({{ node.id }})">
+                        <!-- hide inactive or zero values -->
+                        {% if display == 'grid inactive' or (node.value == 0 and node.status == 1) %}
+                            <span class="hide">{{ node.value }}</span>
+                        <!-- wrongly flagged nodes are purple -->
+                        {% elif display == 'grid wrongly_flagged_node' %}
+                            <img align="center" src="{{ url_for('features.send_image', filename='skull.png') }}" height="30px" width="30px">
+                        <!-- flagged nodes -->
+                        {% elif display == 'grid flagged_node' %}
+                            <img align="center" src="{{ url_for('features.send_image', filename='flag.png') }}" height="30px" width="30px">
+                        <!-- active node with non 0 value/no mine -->
+                        {% else %}
+                            <span class="{{ node_value_color }}">{{ node.value }}</span>
+                        {% endif %}
+                    </button>
+                {% endif %}
+                <!-- start new row -->
+                {% if loop.index % game_info.length == 0 %}
+                    <div style="clear: both;"></div>
+                {% endif %}
+            {% endfor %}
+        </div>
     {% endif %}
 </div>
 </body>

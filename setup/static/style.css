@@ -31,7 +31,7 @@
     border-color: lightgreen;
 }
 .flagged_node:hover, .flagged_node:focus {
-    background-color: #03211c;
+    background-color: #0c7d6a;
 }
 /* when the game is lost the mines are exposed and this is the style for those mines */
 .active_mine {
@@ -150,11 +150,10 @@ body {
     border-radius: 11px;
 }
 /* style for when a user gets a penalty message */
-.alert{
+.alert {
     width: 450px;
-    margin: 5px auto;
+    margin: 10px auto;
     border-radius: 11px;
-
 }
 /* the Minesweeper logo */
 .title {
@@ -196,4 +195,9 @@ body {
 }
 .eight {
     color: gray;
+}
+/* we set the game width to 1450px to let the all games fit on the page. Align all child elements to the center */
+#game_width {
+    text-align: center;
+    width: 1450px;
 }
