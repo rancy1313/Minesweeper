@@ -22,24 +22,42 @@ def send_image(filename):
 # this function is for the home page
 @features.route('/', methods=['GET'])
 def start():
-    '''names = ['Cal', 'Jon', 'Dan', 'Henry', 'Ran', 'Berny']
-    scores = [0, 30, 134, 45, 23, 89]
-    difficulty = ['Medium', 'Beginner', 'Hard', 'Hard', 'Beginner', 'Medium']
-    mines = [45, 20, 125, 125, 20, 45]
-    for i in range(6):
-        tmp_game = Game(name=names[i], score=scores[i], difficulty=difficulty[i], mines=mines[i])
-        db.session.add(tmp_game)
-    db.session.commit()'''
-    '''names = ['Cal', 'Jon', 'Dane', 'Henry', 'Ranee', 'Berny', 'coline', 'cameron', 'janice', 'camela', 'eli']
-    scores = [548, 909, 1394, 859, 239, 889, 785, 953, 989, 500, 789]
+    '''names = ['Cal', 'Jon', 'Dane', 'Henry', 'Ranee', 'Berny', 'coline', 'cameron', 'janice', 'Carmela', 'Eli']
+    scores = [348, 409, 194, 259, 139, 489, 485, 353, 489, 300, 389]
     difficulty = ['Beginner', 'Beginner', 'Beginner', 'Beginner', 'Beginner', 'Beginner', 'Beginner', 'Beginner', 'Beginner', 'Beginner', 'Beginner']
     mines = [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
     for i in range(len(scores)):
         tmp_game = Game(name=names[i], score=scores[i], difficulty=difficulty[i], mines=mines[i])
-        db.session.add(tmp_game)'''
+        db.session.add(tmp_game)
+    names = ['Brian', 'Jose', 'Chere', 'Hunter', 'Jess', 'Maya', 'Marco', 'Anna', 'Joy', 'Trin', 'Jacob']
+    scores = [548, 909, 994, 859, 239, 889, 785, 953, 989, 500, 789]
+    difficulty = ['Medium', 'Medium', 'Medium', 'Medium', 'Medium', 'Medium', 'Medium', 'Medium',
+                  'Medium', 'Medium', 'Medium']
+    mines = [34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34]
+    for i in range(len(scores)):
+        tmp_game = Game(name=names[i], score=scores[i], difficulty=difficulty[i], mines=mines[i])
+        db.session.add(tmp_game)
+    names = ['Gael', 'Stace', 'Ashley', 'Pilo', 'Eli', 'Oli', 'Ellen', 'Matt', 'Jake', 'Blake', 'Kayla']
+    scores = [1148, 1209, 1394, 1459, 1239, 889, 1485, 953, 1289, 1500, 1289]
+    difficulty = ['Hard', 'Hard', 'Hard', 'Hard', 'Hard', 'Hard', 'Hard', 'Hard',
+                  'Hard', 'Hard', 'Hard']
+    mines = [94, 94, 94, 94, 94, 94, 94, 94, 94, 94, 94]
+    for i in range(len(scores)):
+        tmp_game = Game(name=names[i], score=scores[i], difficulty=difficulty[i], mines=mines[i])
+        db.session.add(tmp_game)
+    names = ['Jaz', 'Chris', 'Sabrina']
+    scores = [0, 0, 0]
+    difficulty = ['Hard', 'Medium', 'Beginner']
+    mines = [94, 34, 15]
+    for i in range(len(scores)):
+        tmp_game = Game(name=names[i], score=scores[i], difficulty=difficulty[i], mines=mines[i])
+        db.session.add(tmp_game)
     db.session.commit()
+    f = db.session.query(Game).filter_by(score=0).order_by(desc(Game.id)).all()
+    print(f)'''
+
     # retrieve the test games by id to delete the oldest games
-    tests = db.session.query(Game).filter_by(mines=5).order_by(desc(Game.id)).all()
+    tests = db.session.query(Game).filter_by(mines=4).order_by(desc(Game.id)).all()
     # if there are over 5 games then we delete the oldest game
     if len(tests) > 5:
         for i in range(len(tests)):
@@ -54,7 +72,7 @@ def start():
         # loop over retrieved games
         for i in range(len(easy)):
             # delete any game over 9(keep 10 games)
-            if i > 9:
+            if i > 9 and easy[i].score != 0:
                 db.session.delete(easy[i])
     # gets medium games by score to delete the games with the lowest scores
     medium = db.session.query(Game).filter_by(mines=34).order_by(desc(Game.score)).all()
@@ -63,7 +81,7 @@ def start():
         # loop over retrieved games
         for i in range(len(medium)):
             # delete any game over 9(keep 10 games)
-            if i > 9:
+            if i > 9 and medium[i].score != 0:
                 db.session.delete(medium[i])
     # gets hard games by score to delete the games with the lowest scores
     hard = db.session.query(Game).filter_by(mines=94).order_by(desc(Game.score)).all()
@@ -72,8 +90,10 @@ def start():
         # loop over retrieved games
         for i in range(len(hard)):
             # delete any game over 9(keep 10 games)
-            if i > 9:
+            if i > 9 and hard[i].score != 0:
                 db.session.delete(hard[i])
+    # we do not delete any lucky games(score 0 except test lucky games) because the chances of getting those are rare
+    # and there might not ever be that many for it to be a problem
     db.session.commit()
     # the leader board is all the saved games
     leaderboard = db.session.query(Game).order_by(Game.score).all()
@@ -395,8 +415,10 @@ def submit_score():
         difficulty = 'Beginner'
     elif game_info.length == 15:
         difficulty = 'Medium'
-    else:
+    elif game_info.length == 25:
         difficulty = 'Hard'
+    else:
+        difficulty = 'Test Game'
     # create game with the info
     game = Game(name=name, score=game_info.updated_time, mines=mines, difficulty=difficulty)
     db.session.add(game)

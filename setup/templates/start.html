@@ -106,7 +106,7 @@
                     {% set seconds = game.score|int % 60 %}
                     <!-- do not display games with scores of 0 because those are first node winners, and they go in
                          their own category -->
-                    {% if game.score != 0 and game.difficulty == difficulty and game.mines != 5 %}
+                    {% if game.score != 0 and game.difficulty == difficulty %}
                         <!-- set the rank to the length of what each difficulty list is -->
                         {% if game.difficulty == 'Beginner' %}
                             {% set rank = Beginner_rank.value %}
@@ -143,8 +143,8 @@
                                 {% set Hard_rank.value = Hard_rank.value + 1 %}
                             {% endif %}
                         </p>
-                    <!-- All the first node winners are displayed here by order of when the game was won -->
-                    {% elif game.score == 0 and difficulty == 'First Node Winners' %}
+                    <!-- All the first node winners are displayed here by order of when the game was won(minus test games) -->
+                    {% elif game.score == 0 and difficulty == 'First Node Winners' and game.difficulty != "Test Game" %}
                         <div class="player_scores">
                             <p class="stats">
                                 <!-- Four leaf clover icon for all first node winners(free use) -->
@@ -155,7 +155,7 @@
                             <p class="stats">Difficulty: {{ game.difficulty }}</p>
                         </div>
                     <!-- all test games go here. Only the 5 most recent games are kept -->
-                    {% elif game.mines == 5 and difficulty == 'Test Game' %}
+                    {% elif game.difficulty == 'Test Game' and difficulty == 'Test Game' %}
                         <div class="player_scores">
                             <p class="stats">Player: {{ game.name }}</p>
                             <p class="stats">Score: {{ "%02d" % minutes }}:{{ "%02d" % seconds }}</p>
