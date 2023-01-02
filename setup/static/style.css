@@ -55,8 +55,9 @@
 }
 /* to add a background color to the game */
 body {
-    margin: 45px;
+    padding: 45px;
     background-color: #EDF0EF;
+    width: 1450px;
 }
 /* this is the style for the top buttons(Home, Beginner, Medium, and Hard */
 .btn {
@@ -134,7 +135,7 @@ body {
     border: solid;
     border-width: 1px;
     text-align: center;
-    width: 70%;
+    width: 85%;
     margin: 20px auto;
     border-radius: 11px;
 }
@@ -197,7 +198,35 @@ body {
     color: gray;
 }
 /* we set the game width to 1450px to let the all games fit on the page. Align all child elements to the center */
-#game_width {
+#game_align_center {
     text-align: center;
-    width: 1450px;
+}
+
+#key {
+    background-color: gray;
+    color: white;
+    padding: 30px 45px;
+    border: solid;
+    border-color: black;
+    border-radius: 15px;
+    margin: 30px auto;
+    font-size: 18px;
+}
+
+.help {
+    background-color: gray;
+    color: white;
+    border: solid;
+    border-color: black;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    align-text: center;
+    font-size: 20px;
+    margin: 15px 5px;
+}
+
+.help:hover {
+    background-color: black;
+    border-color: gray;
 }

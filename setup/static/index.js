@@ -67,4 +67,8 @@ window.addEventListener("keydown", function(e) {
     }
 })
 
+function help() {
+    var x = document.getElementById("key");
+    x.classList.toggle("hide");
+}
 

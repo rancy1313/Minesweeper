@@ -42,9 +42,22 @@
 <!-- everytime the page is refreshed we update the timer's time to match the backend time. If there is no game then
      nothing happens-->
 <body onload="update_time({{ game_time }})">
+    <!-- these are the rules and the player can hide or display them if they need help -->
+    <div id="key" class="hide">
+        <p><b>How to play(Visibility of the rules can be toggled by clicking the '?' icon):</b></p>
+        <p>1. While hovering over a node, press 'M' key to flag and unflag a node.</p>
+        <p>2. If you flag nodes around an active node and then press the active node, it will let you know if you guessed
+            the mine(s) correctly. However, if you guessed wrong, then you'll get a penalty of +10 seconds to your score
+            for each node that was guessed wrong. </p>
+        <p>3. Pressing on a node with a mine will cause all the mines to go off and lose the game.</p>
+        <p>4. Each node has a value that lets you know how many mines are surrounding it.</p>
+        <p>5. To win, you must activate all nodes that do not have a mine.</p>
+        <p>6. If there are multiple wrongly flagged nodes around a node, then you can click the base node to set them
+              all to active at the same time(or you can activate them one at a time, and they must be activated to win).</p>
+    </div>
 <!-- this div set elements to the center and increases the width to allow the games to fit on the page without them
      collapsing on themselves -->
-<div id="game_width">
+<div id="game_align_center">
     <p id="jello"></p>
     <!-- logo header -->
     <h1 class="title">Minesweeper</h1>
@@ -188,8 +201,13 @@
              kept track of if the player has selected the first node, but this way works too. We split it up because the
              nodes of the grid have a form that passes the values to the first node function.-->
         {% if grid %}
-            <!-- bomb counter -->
-            <h2>Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int }}</h2>
+
+            <h2>
+                <!-- help button can hide and display the rules -->
+                <button type="" class="help" onclick="help()">?</button>
+                <!-- bomb counter -->
+                Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int }}
+            </h2>
             {% for node in grid %}
                 {% if node.status == 0 %}
                     {% set display = 'grid inactive' %}
@@ -213,6 +231,8 @@
         {% set minutes = (game_info.updated_time / 60)|int %}
         {% set seconds = game_info.updated_time % 60 %}
         <h2>
+            <!-- help button can hide and display the rules -->
+            <button type="" class="help" onclick="help()">?</button>
             <!-- if game is lost then display the total of bombs -->
             {% if game_info.game_over == -1 %}
                 Bombs: {{ (0.15 * game_info.length * game_info.length)|round|int }}  --
