@@ -14,14 +14,14 @@
 .inactive {
     background-color: #adebf0;
 }
-.inactive:hover, .inactive:focus {
+.inactive:hover {
     background-color: #71c3c9;
 }
 /* the style for active nodes that have been selected already */
 .active {
     background-color: #f5f2e9;
 }
-.active:hover, .active:focus {
+.active:hover {
     background-color: #d4d0c7;
 }
 /* style for nodes that were flagged by the player as potential mines */
@@ -30,7 +30,7 @@
     color: white;
     border-color: lightgreen;
 }
-.flagged_node:hover, .flagged_node:focus {
+.flagged_node:hover {
     background-color: #0c7d6a;
 }
 /* when the game is lost the mines are exposed and this is the style for those mines */

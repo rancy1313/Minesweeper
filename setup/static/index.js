@@ -24,6 +24,8 @@ function check_value(node_id) {
         method: "POST"
     }).then((_res) => {
         // refresh the div containing the game
+        /* we refresh the div instead of calling the refresh game function because refreshing the div avoids making the
+           page go back to the top and lets the player not have to scroll back down after every move */
         $( "#game_width" ).load(window.location.href + " #game_width" );
         // used to refresh the page by calling backend. Now we just refresh the div containing the div
         //window.location.href = `/refresh-game`;
@@ -53,6 +55,9 @@ window.addEventListener("keydown", function(e) {
                 fetch(`/flag-node/${node.id}`, {
                     method: "POST"
                 }).then((_res) => {
+                    /* we refresh the div instead of calling the refresh game function because refreshing the div avoids
+                       making the page go back to the top and lets the player not have to scroll back down after every
+                       move */
                     // refresh the div containing the game
                     $( "#game_width" ).load(window.location.href + " #game_width" );
                     //window.location.href = `/refresh-game`;
