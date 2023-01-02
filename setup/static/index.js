@@ -20,16 +20,7 @@ setInterval( function(){
 
 // this function is to pass info to the backend and then refresh the page
 function check_value(node_id) {
-    fetch(`/check-node-value/${node_id}`, {
-        method: "POST"
-    }).then((_res) => {
-        // refresh the div containing the game
-        /* we refresh the div instead of calling the refresh game function because refreshing the div avoids making the
-           page go back to the top and lets the player not have to scroll back down after every move */
-        $( "#game_width" ).load(window.location.href + " #game_width" );
-        // used to refresh the page by calling backend. Now we just refresh the div containing the div
-        //window.location.href = `/refresh-game`;
-    });
+    window.location.href = `/check-node-value/${node_id}`;
 }
 
 // this function is used as an onload function in the body tag to update the game's time everytime the page is refreshed
@@ -49,19 +40,7 @@ window.addEventListener("keydown", function(e) {
             // this will only call the back end function for nodes that are inactive and flagged
             if (node.matches(':hover') && ['grid inactive', 'grid flagged_node'].includes(node.className)) {
                 // call the back end flag function
-                /* used to just call back end and refresh page now refresh the div after changes. Leaving this here
-                   because idk if I like refreshing the game this way */
-                //window.location.href = `/flag-node/${node.id}`;
-                fetch(`/flag-node/${node.id}`, {
-                    method: "POST"
-                }).then((_res) => {
-                    /* we refresh the div instead of calling the refresh game function because refreshing the div avoids
-                       making the page go back to the top and lets the player not have to scroll back down after every
-                       move */
-                    // refresh the div containing the game
-                    $( "#game_width" ).load(window.location.href + " #game_width" );
-                    //window.location.href = `/refresh-game`;
-                });
+                window.location.href = `/flag-node/${node.id}`;
             }
         }
     }

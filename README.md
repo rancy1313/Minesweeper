@@ -64,3 +64,11 @@ mine on the game (with a special style to set it apart from
 normal flags) that the player could use if they were having a 
 hard time completing the game. However, taking hints should maybe come with penalties(maybe 
 +60 seconds to the score).
+- add a way so that the page does not refresh and go all the way to the 
+top every time a player makes a move. Usually, this is only an issue
+in the 25x25 game mode because it is larger. I had a way to do it
+by refreshing the html elements themselves, but that broke everything.
+The other way I currently can think of fixing this is by changing the 
+way I set things up and having more functionality done on the front
+end, but I do not want to do this now because it will require
+changing a lot of the code (I'll come back to it later).

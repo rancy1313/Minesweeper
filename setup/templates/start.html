@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html id="test" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Minesweeper</title>
@@ -19,29 +19,31 @@
     <!-- game_time is a variable to pass to the 'onload' function that updates the games time. Set it to updated_time
          everytime the page is refreshed to update the time -->
     {% set game_time = game_info.updated_time %}
-    <!-- if game_over == 1 then the game was won by the player -->
-    {% if game_info.game_over == 1 %}
-        <!-- add the game won class and congrats message to the header -->
-        {% set display = 'game_won' %}
-        {% set message = 'CONGRATULATIONS!!!' %}
-    <!-- if game_over == -1 then the game was lost by the player -->
-    {% elif game_info.game_over == -1 %}
-        <!-- add the game lost class and try again message to the header -->
-        {% set display = 'game_lost' %}
-        {% set message = 'SORRY. TRY AGAIN!!!' %}
-    <!-- the game is ongoing and we hide the header -->
-    {% else %}
-        <!-- hide the header -->
-        {% set display = 'hide' %}
-        {% set message = 'N/A' %}
-    {% endif %}
 {% else %}
     <!-- if game_info does not exist then just set the game time to 0 -->
     {% set game_time = 0 %}
 {% endif %}
 <!-- everytime the page is refreshed we update the timer's time to match the backend time. If there is no game then
      nothing happens-->
-<body onload="update_time({{ game_time }})">
+<body id="refresh_game" onload="update_time({{ game_time }})">
+    {% if game_info %}
+        <!-- if game_over == 1 then the game was won by the player -->
+        {% if game_info.game_over == 1 %}
+            <!-- add the game won class and congrats message to the header -->
+            {% set display = 'game_won' %}
+            {% set message = 'CONGRATULATIONS!!!' %}
+        <!-- if game_over == -1 then the game was lost by the player -->
+        {% elif game_info.game_over == -1 %}
+            <!-- add the game lost class and try again message to the header -->
+            {% set display = 'game_lost' %}
+            {% set message = 'SORRY. TRY AGAIN!!!' %}
+        <!-- the game is ongoing and we hide the header -->
+        {% else %}
+            <!-- hide the header -->
+            {% set display = 'hide' %}
+            {% set message = 'N/A' %}
+        {% endif %}
+    {% endif %}
     <!-- these are the rules and the player can hide or display them if they need help -->
     <div id="key" class="hide">
         <p><b>How to play(Visibility of the rules can be toggled by clicking the '?' icon):</b></p>
@@ -58,7 +60,6 @@
 <!-- this div set elements to the center and increases the width to allow the games to fit on the page without them
      collapsing on themselves -->
 <div id="game_align_center">
-    <p id="jello"></p>
     <!-- logo header -->
     <h1 class="title">Minesweeper</h1>
     <!-- div to add margin to the top page buttons -->
@@ -106,7 +107,7 @@
                     {% set seconds = game.score|int % 60 %}
                     <!-- do not display games with scores of 0 because those are first node winners, and they go in
                          their own category -->
-                    {% if game.score != 0 and game.difficulty == difficulty %}
+                    {% if game.score != 0 and game.difficulty == difficulty and difficulty != 'Test Game' %}
                         <!-- set the rank to the length of what each difficulty list is -->
                         {% if game.difficulty == 'Beginner' %}
                             {% set rank = Beginner_rank.value %}
@@ -201,7 +202,6 @@
              kept track of if the player has selected the first node, but this way works too. We split it up because the
              nodes of the grid have a form that passes the values to the first node function.-->
         {% if grid %}
-
             <h2>
                 <!-- help button can hide and display the rules -->
                 <button type="" class="help" onclick="help()">?</button>
