@@ -34,7 +34,7 @@ window.addEventListener("keydown", function(e) {
     if (e.keyCode === 77) {
         // fetch all buttons to see which node the user is hovering over
         const nodes = document.querySelectorAll('button');
-        // loop through the nodes
+        // loop through the nodes to update their styles
         for (const node of nodes) {
             // find the node that is being hovered over when the user pressed 'm'
             // this will only call the back end function for nodes that are inactive and flagged
